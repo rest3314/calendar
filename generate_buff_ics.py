@@ -17,7 +17,6 @@ while first_start < end_of_day:
     e.begin = first_start
     e.end = first_start + timedelta(minutes=buff_duration)
     c.events.add(e)
-
     first_start += timedelta(minutes=buff_interval)
     count += 1
 
