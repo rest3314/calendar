@@ -1,0 +1,27 @@
+name: Generate ICS
+
+on:
+  schedule:
+    - cron: '0 0 * * *'  # 매일 00:00 KST 기준
+  workflow_dispatch:    # 수동 실행 가능
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.11'
+      - name: Install dependencies
+        run: pip install ics
+      - name: Generate ICS
+        run: python generate_buff_ics.py
+      - name: Commit and Push ICS
+        run: |
+          git config --global user.name "github-actions"
+          git config --global user.email "actions@github.com"
+          git add buff.ics
+          git commit -m "Update ICS"
+          git push
