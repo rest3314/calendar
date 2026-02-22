@@ -2,24 +2,41 @@ name: Generate ICS
 
 on:
   schedule:
-    - cron: '0 0 * * *'  # 매일 00:00 KST 기준
-  workflow_dispatch:    # 수동 실행 가능
+    - cron: '0 0 * * *'   # 매일 00:00 KST 기준
+  workflow_dispatch:      # 수동 실행 가능
 
 jobs:
   build:
     runs-on: ubuntu-latest
+
     steps:
       - uses: actions/checkout@v3
+
       - name: Set up Python
         uses: actions/setup-python@v4
         with:
           python-version: '3.11'
+
       - name: Install dependencies
         run: pip install ics
+
       - name: Generate ICS
         run: python generate_buff_ics.py
-      - name: Commit and Push ICS
+
+      - name: Check generated files
+        run: ls -l
+
+      - name: Commit and Push ICS if changed
+        shell: bash
         run: |
-          git add buff.ics
-          git commit -m "Update ICS"
-          git push
+          git config --global user.name "rest3314"
+          git config --global user.email "rest3314@github.com"
+
+          CHANGES=$(git status --porcelain)
+
+          if [ -n "$CHANGES" ]; then
+            git add buff.ics
+            git commit -m "Update ICS"
+            git push
+          else
+            echo "No changes to commit, skipping push"
